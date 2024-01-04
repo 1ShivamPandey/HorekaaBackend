@@ -142,40 +142,166 @@ const verify = asynchandler(async (req, res) => {
   if (Database && Database.otp === otp) {
     if (new Date() > Database.otpExpiration) {
       console.log("Time is over");
+      return res.status(400).json({ error: 'OTP expired' });
+
     } else {
       console.log("Otp is right");
-    await  UserDetails.findOneAndUpdate({number},{isVerified:true})
+      await UserDetails.findOneAndUpdate({ number }, { isVerified: true });
+      return res.status(200).json({ message: 'OTP verified successfully' });
 
-     // Database.isVerified == true;
-      
+      // Database.isVerified == true;
     }
   } else {
     console.log("not matched");
+    return res.status(400).json({ error: 'OTP mismatch' });
+
   }
 });
 
+const ResendOtp = asynchandler(async (req, res) => {
+  const { number, otp } = req.body;
+
+  function generateOTP() {
+    return Math.floor(1000 + Math.random() * 9000);
+  }
+
+  var newphoneotp = generateOTP();
+  console.log("new Generated OTP:", newphoneotp);
+
+  const Database = await UserDetails.findOneAndUpdate(
+    { number },
+    { otp: newphoneotp }
+  );
+
+  var options = {
+    authorization:
+      "KyHirObxvTPpzR6hmuea3qlAo7YFUsn9gSc51WM0DjELtXBZJG3IERbCpXNAs6DagVH4BMdPTuFhGvZe",
+    message: `hey bro  this is the code ${newphoneotp}`,
+    numbers: [number],
+  };
+  fast2sms
+    .sendMessage(options)
+    .then((response) => {
+      console.log("Message Sent:", response);
+    })
+    .catch((error) => {
+      console.log("Error Occurred:", error);
+    });
+
+  // if (Database && Database.otp === otp) {
+  //   if (new Date() > Database.otpExpiration) {
+  //     console.log("Time is over");
+  //   } else {
+  //     console.log("Otp is right");
+  //   await  UserDetails.findOneAndUpdate({number},{isVerified:true})
+
+  //    // Database.isVerified == true;
+  //   }
+  // } else {
+  //   console.log("not matched");
+  // }
+});
+
+const ForgotPassword = asynchandler(async (req, res) => {
+  const { number, otp } = req.body;
+  function generateOTP() {
+    return Math.floor(1000 + Math.random() * 9000);
+  }
+  var newphoneotp = generateOTP();
+  console.log("new Generated OTP:", newphoneotp);
+
+  var options = {
+    authorization:
+      "KyHirObxvTPpzR6hmuea3qlAo7YFUsn9gSc51WM0DjELtXBZJG3IERbCpXNAs6DagVH4BMdPTuFhGvZe",
+    message: `hey bro  this is the code ${newphoneotp}`,
+    numbers: [number],
+  };
+  fast2sms
+    .sendMessage(options)
+    .then((response) => {
+      console.log("Message Sent:", response);
+    })
+    .catch((error) => {
+      console.log("Error Occurred:", error);
+    });
+
+  const userData = await UserDetails.findOneAndUpdate(
+    { number },
+    { otp: newphoneotp },
+    { new: true }
+  );
+});
+
+const ChangePassword = asynchandler(async (req, res) => {
+  const { number, password, otp } = req.body;
+  const Database = await UserDetails.findOne({ number });
+  const otpExpirationTime = new Date(Date.now() + 1 * 60 * 1000);
+
+  if (Database && Database.otp === otp) {
+    if (new Date() > Database.otpExpiration) {
+
+    const userData = await UserDetails.findOneAndUpdate(
+      { number },
+      { password },
+      { new: true }
+    );
+    }else{
+      console.log("Time gone")
+    }
+  }
+});
+
+// const ChangePassword = asynchandler(async (req, res) => {
+//   const { number, password } = req.body;
+
+//   // Validate the password (you can add more validation logic as required)
+//   if (!password) {
+//     return res.status(400).json({ success: false, message: 'Password is required' });
+//   }
+
+//   try {
+//     // Find the user by number and update the password directly
+//     const userData = await UserDetails.findOneAndUpdate(
+//       { number },
+//       { password }, // Update with plain-text password
+//       { new: true } // Return the updated document
+//     );
+
+//     if (!userData) {
+//       return res.status(404).json({ success: false, message: 'User not found' });
+//     }
+
+//     // Send a success message or the updated user data back
+//     res.status(200).json({ success: true, message: 'Password updated successfully', user: userData });
+//   } catch (error) {
+//     // Handle any errors that occur during the update process
+//     console.error(error.message);
+//     res.status(500).json({ success: false, message: 'Internal Server Error' });
+//   }
+// });
+
 //Login
+
 const authUser = asynchandler(async (req, res) => {
   const { number, password } = req.body;
   const userData = await UserDetails.findOne({ number });
- if (userData.isVerified===true){
-  if (userData && userData.password === password) {
-    res.json({
-      _id: userData._id,
-      name: userData.name,
-      number: userData.number,
-    });
-    console.log("Login ho gya dost");
-    res.status(400).json({ message: "Login ho gya dost" });
-  }else{
-    res.status(400).json({ message: "You verified" });
-  }
-}
-  else{
-    console.log("User is not verified")
+  if (userData.isVerified === true) {
+    if (userData && userData.password === password) {
+      res.json({
+        _id: userData._id,
+        name: userData.name,
+        number: userData.number,
+      });
+      console.log("Login ho gya dost");
+      res.status(400).json({ message: "Login ho gya dost" });
+    } else {
+      res.status(400).json({ message: "You verified" });
+    }
+  } else {
+    console.log("User is not verified");
     res.status(400).json({ message: "you are verified" });
   }
-  
+
   //console.log("Login nahi hua")
 });
 
@@ -242,4 +368,7 @@ module.exports = {
   getUserProfile,
   removefromCart,
   verify,
+  ResendOtp,
+  ForgotPassword,
+  ChangePassword,
 };

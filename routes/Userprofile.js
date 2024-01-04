@@ -1,5 +1,5 @@
 const express = require('express');
-const {registerUser,authUser,getUserProfile,removefromCart,verify} = require('../Controllers/UserProfileControllers')
+const {registerUser,authUser,getUserProfile,removefromCart,verify,ResendOtp,ChangePassword,ForgotPassword} = require('../Controllers/UserProfileControllers')
 const router = express.Router()
 
 router.route('/signup').post(registerUser);
@@ -10,5 +10,8 @@ router.route('/cart/:number/:_id').delete(removefromCart);
 
 //otp verify
 router.route('/verify').post(verify)
+router.route('/resendOtp').post(ResendOtp)
+router.route('/changepassword').post(ChangePassword);
+router.route('/forgotpassword').post(ForgotPassword);
 
 module.exports = router;
