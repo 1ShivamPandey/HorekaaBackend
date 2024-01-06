@@ -10,7 +10,7 @@ router.route('/cart/:number/:_id').delete(removefromCart);
 
 //otp verify
 router.route('/verify').post(verify)
-router.route('/resendOtp').post(ResendOtp)
+router.route('/resendotp').post(ResendOtp)
 router.route('/changepassword').post(ChangePassword);
 router.route('/forgotpassword').post(ForgotPassword);
 

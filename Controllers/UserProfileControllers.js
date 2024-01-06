@@ -71,15 +71,31 @@ const registerUser = asynchandler(async (req, res) => {
   //   return res.status(400).json({ message: "Invalid OTP" });
   // }
 
-  const userExists = await UserDetails.findOne({ number });
+  const userExists = await UserDetails.findOne(
+    { number },
+   // { isVerified: true }
+  );
   if (userExists) {
-    res.status(400);
-    // return res.status(400).json({ error: 'User with this phone number already exists.' });
-    // otpMap.delete(number);
+   // if (userExists.isVerified) {
+      res.status(400);
+      // return res.status(400).json({ error: 'User with this phone number already exists.' });
+      // otpMap.delete(number);
 
-    throw new Error("user already exists");
-    //return res.status(400).json({ message: 'User with this phone number already exists.' });
-    //res.send("user already exists");
+      throw new Error("user already exists");
+      //return res.status(400).json({ message: 'User with this phone number already exists.' });
+      //res.send("user already exists");
+    }
+    //  else {
+    //   await UserDetails.findOneAndUpdate(
+    //     { number },
+    //     { $set: { number, otp: phoneotp } },
+    //     { new: true }
+    //   );
+    //   console.log("You can register");
+    // }
+//  }
+   else {
+    console.log("You can register");
   }
 
   function generateOTP() {
@@ -142,19 +158,17 @@ const verify = asynchandler(async (req, res) => {
   if (Database && Database.otp === otp) {
     if (new Date() > Database.otpExpiration) {
       console.log("Time is over");
-      return res.status(400).json({ error: 'OTP expired' });
-
+      return res.status(400).json({ error: "OTP expired" });
     } else {
       console.log("Otp is right");
       await UserDetails.findOneAndUpdate({ number }, { isVerified: true });
-      return res.status(200).json({ message: 'OTP verified successfully' });
+      return res.status(200).json({ message: "OTP verified successfully" });
 
       // Database.isVerified == true;
     }
   } else {
     console.log("not matched");
-    return res.status(400).json({ error: 'OTP mismatch' });
-
+    return res.status(400).json({ error: "OTP mismatch" });
   }
 });
 
@@ -239,14 +253,13 @@ const ChangePassword = asynchandler(async (req, res) => {
 
   if (Database && Database.otp === otp) {
     if (new Date() > Database.otpExpiration) {
-
-    const userData = await UserDetails.findOneAndUpdate(
-      { number },
-      { password },
-      { new: true }
-    );
-    }else{
-      console.log("Time gone")
+      const userData = await UserDetails.findOneAndUpdate(
+        { number },
+        { password },
+        { new: true }
+      );
+    } else {
+      console.log("Time gone");
     }
   }
 });
