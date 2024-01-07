@@ -244,6 +244,9 @@ const ForgotPassword = asynchandler(async (req, res) => {
     { otp: newphoneotp },
     { new: true }
   );
+  if(userData){
+    return res.status(200).json({ message: "OTP verification code send" });
+  }
 });
 
 const ChangePassword = asynchandler(async (req, res) => {
@@ -261,6 +264,8 @@ const ChangePassword = asynchandler(async (req, res) => {
     } else {
       console.log("Time gone");
     }
+    return res.status(200).json({message:'Password changed successfully'})
+
   }
 });
 
