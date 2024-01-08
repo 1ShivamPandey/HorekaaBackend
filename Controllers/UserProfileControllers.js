@@ -175,6 +175,9 @@ const verify = asynchandler(async (req, res) => {
 const ResendOtp = asynchandler(async (req, res) => {
   const { number, otp } = req.body;
 
+  const otpExpirationTime = new Date(Date.now() + 1 * 60 * 1000);
+
+
   function generateOTP() {
     return Math.floor(1000 + Math.random() * 9000);
   }
@@ -184,7 +187,8 @@ const ResendOtp = asynchandler(async (req, res) => {
 
   const Database = await UserDetails.findOneAndUpdate(
     { number },
-    { otp: newphoneotp }
+    {otp: newphoneotp },
+    {otpExpirationTime}
   );
 
   var options = {
@@ -202,6 +206,7 @@ const ResendOtp = asynchandler(async (req, res) => {
       console.log("Error Occurred:", error);
     });
 
+    return res.status(200).json("Otp is resended")
   // if (Database && Database.otp === otp) {
   //   if (new Date() > Database.otpExpiration) {
   //     console.log("Time is over");
