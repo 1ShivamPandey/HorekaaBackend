@@ -72,29 +72,29 @@ const registerUser = asynchandler(async (req, res) => {
   // }
 
   const userExists = await UserDetails.findOne(
-    { number },
-   // { isVerified: true }
+    { number }
+    // { isVerified: true }
   );
   if (userExists) {
-   // if (userExists.isVerified) {
-      res.status(400);
-      // return res.status(400).json({ error: 'User with this phone number already exists.' });
-      // otpMap.delete(number);
+    // if (userExists.isVerified) {
+    res.status(400);
+    // return res.status(400).json({ error: 'User with this phone number already exists.' });
+    // otpMap.delete(number);
 
-      throw new Error("user already exists");
-      //return res.status(400).json({ message: 'User with this phone number already exists.' });
-      //res.send("user already exists");
-    }
-    //  else {
-    //   await UserDetails.findOneAndUpdate(
-    //     { number },
-    //     { $set: { number, otp: phoneotp } },
-    //     { new: true }
-    //   );
-    //   console.log("You can register");
-    // }
-//  }
-   else {
+    throw new Error("user already exists");
+    //return res.status(400).json({ message: 'User with this phone number already exists.' });
+    //res.send("user already exists");
+  }
+  //  else {
+  //   await UserDetails.findOneAndUpdate(
+  //     { number },
+  //     { $set: { number, otp: phoneotp } },
+  //     { new: true }
+  //   );
+  //   console.log("You can register");
+  // }
+  //  }
+  else {
     console.log("You can register");
   }
 
@@ -177,19 +177,12 @@ const ResendOtp = asynchandler(async (req, res) => {
 
   const otpExpirationTime = new Date(Date.now() + 1 * 60 * 1000);
 
-
   function generateOTP() {
     return Math.floor(1000 + Math.random() * 9000);
   }
 
   var newphoneotp = generateOTP();
   console.log("new Generated OTP:", newphoneotp);
-
-  const Database = await UserDetails.findOneAndUpdate(
-    { number },
-    {otp: newphoneotp },
-    {otpExpirationTime}
-  );
 
   var options = {
     authorization:
@@ -206,7 +199,12 @@ const ResendOtp = asynchandler(async (req, res) => {
       console.log("Error Occurred:", error);
     });
 
-    return res.status(200).json("Otp is resended")
+  const Database = await UserDetails.findOneAndUpdate(
+    { number },
+    { otp: newphoneotp },
+    { otpExpirationTime }
+  );
+  return res.status(200).json("Otp is resended");
   // if (Database && Database.otp === otp) {
   //   if (new Date() > Database.otpExpiration) {
   //     console.log("Time is over");
@@ -249,7 +247,7 @@ const ForgotPassword = asynchandler(async (req, res) => {
     { otp: newphoneotp },
     { new: true }
   );
-  if(userData){
+  if (userData) {
     return res.status(200).json({ message: "OTP verification code send" });
   }
 });
@@ -269,8 +267,7 @@ const ChangePassword = asynchandler(async (req, res) => {
     } else {
       console.log("Time gone");
     }
-    return res.status(200).json({message:'Password changed successfully'})
-
+    return res.status(200).json({ message: "Password changed successfully" });
   }
 });
 
