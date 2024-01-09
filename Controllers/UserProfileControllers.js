@@ -202,7 +202,7 @@ const ResendOtp = asynchandler(async (req, res) => {
   const Database = await UserDetails.findOneAndUpdate(
     { number },
     { otp: newphoneotp },
-    { otpExpirationTime }
+    { otpExpiration: otpExpirationTime }
   );
   return res.status(200).json({message:"Otp is resended"});
   // if (Database && Database.otp === otp) {
