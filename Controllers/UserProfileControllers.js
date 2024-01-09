@@ -201,11 +201,11 @@ const ResendOtp = asynchandler(async (req, res) => {
 
   const Database = await UserDetails.findOneAndUpdate(
     { number },
-    { otp: newphoneotp },
-    { otpExpiration: otpExpirationTime },
-    {new:true}
+    { otp: newphoneotp ,
+    otpExpiration: otpExpirationTime },
+    { new: true }
   );
-  return res.status(200).json({message:"Otp is resended"});
+  return res.status(200).json({ message: "Otp is resended" });
   // if (Database && Database.otp === otp) {
   //   if (new Date() > Database.otpExpiration) {
   //     console.log("Time is over");
