@@ -204,7 +204,7 @@ const ResendOtp = asynchandler(async (req, res) => {
     { otp: newphoneotp },
     { otpExpirationTime }
   );
-  return res.status(200).json("Otp is resended");
+  return res.status(200).json({message:"Otp is resended"});
   // if (Database && Database.otp === otp) {
   //   if (new Date() > Database.otpExpiration) {
   //     console.log("Time is over");
