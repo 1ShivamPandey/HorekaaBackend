@@ -175,7 +175,7 @@ const verify = asynchandler(async (req, res) => {
 const ResendOtp = asynchandler(async (req, res) => {
   const { number, otp } = req.body;
 
-  const otpExpirationTime = new Date(Date.now() + 1 * 60 * 1000);
+  const otpExpirationTime = new Date(Date.now() + 2 * 60 * 1000);
 
   function generateOTP() {
     return Math.floor(1000 + Math.random() * 9000);
