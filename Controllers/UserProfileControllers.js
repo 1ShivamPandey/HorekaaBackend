@@ -105,7 +105,7 @@ const registerUser = asynchandler(async (req, res) => {
   var phoneotp = generateOTP();
   console.log("Generated OTP:", phoneotp);
 
-  const otpExpirationTime = new Date(Date.now() + 1 * 60 * 1000);
+  const otpExpirationTime = new Date(Date.now() + 2 * 60 * 1000);
 
   const userData = await UserDetails.create({
     name,
@@ -256,7 +256,7 @@ const ForgotPassword = asynchandler(async (req, res) => {
 const ChangePassword = asynchandler(async (req, res) => {
   const { number, password, otp } = req.body;
   const Database = await UserDetails.findOne({ number });
-  const otpExpirationTime = new Date(Date.now() + 1 * 60 * 1000);
+  const otpExpirationTime = new Date(Date.now() + 2 * 60 * 1000);
 
   if (Database && Database.otp === otp) {
     if (new Date() > Database.otpExpiration) {

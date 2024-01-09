@@ -11,7 +11,7 @@ const userSchema = mongoose.Schema(
     otpExpiration: {
       type: Date,
       required: true,
-      default: Date.now() + 1 * 60 * 1000 
+      default: Date.now() + 2 * 60 * 1000 
     },
     isVerified:{type:Boolean},
     directOrders:[{ productId: String, name: String, price: String,size:String,quantity:String,pincode:String,address:String}],
