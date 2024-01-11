@@ -52,100 +52,121 @@ const registerUser = asynchandler(async (req, res) => {
     throw new Error("Please enter all the details");
   }
 
-  // const storedOtp = otpGenerator.generate(6, {
-  //   upperCase: false,
-  //   specialChars: false,
-  //   alphabets: false,
-  // });
+  let phoneotp;
+  let otpExpirationTime;
 
-  // otpMap.set(number, storedOtp);
+  const userExists = await UserDetails.findOne({ number });
 
-  // if (enteredOtp !== storedOtp) {
-  //   otpMap.delete(number);
+  if (!userExists) {
+    function generateOTP() {
+      return Math.floor(1000 + Math.random() * 9000);
+    }
+    phoneotp = generateOTP();
+    console.log("Generated OTP createuser:", phoneotp);
 
-  //   return res.status(400).json({ message: "Invalid Otp" });
-  // }
+    otpExpirationTime = new Date(Date.now() + 2 * 60 * 1000);
 
-  // const isValidOTP = verifyOTP(enteredOtp, storedOTP);
-  // if (!isValidOTP) {
-  //   return res.status(400).json({ message: "Invalid OTP" });
-  // }
-
-  const userExists = await UserDetails.findOne(
-    { number }
-    // { isVerified: true }
-  );
-  if (userExists) {
-    // if (userExists.isVerified) {
-    res.status(400);
-    // return res.status(400).json({ error: 'User with this phone number already exists.' });
-    // otpMap.delete(number);
-
-    throw new Error("user already exists");
-    //return res.status(400).json({ message: 'User with this phone number already exists.' });
-    //res.send("user already exists");
-  }
-  //  else {
-  //   await UserDetails.findOneAndUpdate(
-  //     { number },
-  //     { $set: { number, otp: phoneotp } },
-  //     { new: true }
-  //   );
-  //   console.log("You can register");
-  // }
-  //  }
-  else {
-    console.log("You can register");
-  }
-
-  function generateOTP() {
-    return Math.floor(1000 + Math.random() * 9000);
-  }
-
-  var phoneotp = generateOTP();
-  console.log("Generated OTP:", phoneotp);
-
-  const otpExpirationTime = new Date(Date.now() + 2 * 60 * 1000);
-
-  const userData = await UserDetails.create({
-    name,
-    number,
-    password,
-    otp: phoneotp,
-    otpExpiration: otpExpirationTime,
-    isVerified: false,
-  });
-
-  if (userData) {
-    //OTP
-    var options = {
-      authorization:
-        "KyHirObxvTPpzR6hmuea3qlAo7YFUsn9gSc51WM0DjELtXBZJG3IERbCpXNAs6DagVH4BMdPTuFhGvZe",
-      message: `hey bro  this is the code ${phoneotp}`,
-      numbers: [number],
-    };
-    fast2sms
-      .sendMessage(options)
-      .then((response) => {
-        console.log("Message Sent:", response);
-      })
-      .catch((error) => {
-        console.log("Error Occurred:", error);
-      });
-
-    res.status(201).json({
-      _id: userData._id,
-      name: userData.name,
-      number: userData.number,
-      password: userData.password,
+    const userData = await UserDetails.create({
+      name,
+      number,
+      password,
       otp: phoneotp,
-      // otpExpiration:otpExpirationTime,
+      otpExpiration: otpExpirationTime,
+      isVerified: false,
     });
-    console.log("Baan gya");
+
+    if (userData) {
+      //OTP
+      var options = {
+        authorization:
+          "KyHirObxvTPpzR6hmuea3qlAo7YFUsn9gSc51WM0DjELtXBZJG3IERbCpXNAs6DagVH4BMdPTuFhGvZe",
+        message: `hey bro  this is the code ${phoneotp}`,
+        numbers: [number],
+      };
+      fast2sms
+        .sendMessage(options)
+        .then((response) => {
+          console.log("Message Sent:", response);
+        })
+        .catch((error) => {
+          console.log("Error Occurred:", error);
+        });
+
+      res.status(201).json({
+        _id: userData._id,
+        name: userData.name,
+        number: userData.number,
+        password: userData.password,
+        otp: phoneotp,
+        // otpExpiration:otpExpirationTime,
+      });
+      console.log("Baan gya");
+    } else {
+      res.status(400);
+      throw new Error("Failed to create the user");
+     console.log("nahi bna");
+    }
+  }
+
+  if (userExists) {
+    if (userExists.isVerified) {
+      console.log("User with this phone number already exists.");
+      // res.status(400);
+      // return res.status(400).json({ error: "User with this phone number already exists." });
+        return res.status(200).json({ message: "Number already exists" });
+    } else {
+      function generateOTP() {
+        return Math.floor(1000 + Math.random() * 9000);
+      }
+      phoneotp = generateOTP();
+      console.log("Generated OTP:", phoneotp);
+
+      otpExpirationTime = new Date(Date.now() + 2 * 60 * 1000);
+
+      const updatedUser = await UserDetails.findOneAndUpdate(
+        { number, isVerified: false },
+        {
+          $set: {
+            name,
+            password,
+            otp: phoneotp,
+            otpExpiration: otpExpirationTime,
+            isVerified: false,
+          },
+        },
+        { new: true }
+      );
+      if (updatedUser) {
+        var options = {
+          authorization:
+            "KyHirObxvTPpzR6hmuea3qlAo7YFUsn9gSc51WM0DjELtXBZJG3IERbCpXNAs6DagVH4BMdPTuFhGvZe",
+          message: `hey bro  this is the code ${phoneotp}`,
+          numbers: [number],
+        };
+        fast2sms
+          .sendMessage(options)
+          .then((response) => {
+            console.log("Message Sent:", response);
+          })
+          .catch((error) => {
+            console.log("Error Occurred:", error);
+          });
+
+
+          res.status(201).json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            number: updatedUser.number,
+            password: updatedUser.password,
+            otp: phoneotp,
+            // otpExpiration:otpExpirationTime,
+          });
+      }
+      console.log("You can register");
+      // console.log(phoneotp, otpExpirationTime);
+    }
   } else {
-    res.status(400);
-    throw new Error("Failed to create the user");
-    // console.log("nahi bna");
+    console.log("You can register");
   }
 });
 
@@ -201,8 +222,7 @@ const ResendOtp = asynchandler(async (req, res) => {
 
   const Database = await UserDetails.findOneAndUpdate(
     { number },
-    { otp: newphoneotp ,
-    otpExpiration: otpExpirationTime },
+    { otp: newphoneotp, otpExpiration: otpExpirationTime },
     { new: true }
   );
   return res.status(200).json({ message: "Otp is resended" });
@@ -316,11 +336,11 @@ const authUser = asynchandler(async (req, res) => {
       console.log("Login ho gya dost");
       res.status(400).json({ message: "Login ho gya dost" });
     } else {
-      res.status(400).json({ message: "You verified" });
+      res.status(400).json({ message: "Wrong password" });
     }
   } else {
     console.log("User is not verified");
-    res.status(400).json({ message: "you are verified" });
+    res.status(200).json({ message: "you are verified" });
   }
 
   //console.log("Login nahi hua")
