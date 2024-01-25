@@ -1,6 +1,6 @@
 const asynchandler = require("express-async-handler");
 const UserDetails = require("../model/UserProfileModel");
-
+const Usercart = require("../model/UserCartModel")
 const CartData = asynchandler (async(req,res)=>{
 try {
     const { number, productId, name, price ,Cartimage} = req.body;
@@ -20,6 +20,15 @@ try {
     user.cart.push({ productId, name, price ,Cartimage});
     await user.save();
     
+    const UserCart = new Usercart({
+      userId: user._id,
+      userName:user.name,
+      cartItems: user.cart,
+    });
+
+    await UserCart.save();
+
+
     console.log("User after adding to cart.................", user); // Log user to check cart
 
     res.status(201).json({ message: 'Item added to cart successfully' });

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const cart = require("./UserCartModel");
+const apnaCart = require("./UserCartModel");
 const buynow = require("./UserBuyNowModel")
 const directOrders = require("./DirectOrdersModel")
 const userSchema = mongoose.Schema(
@@ -19,8 +19,10 @@ const userSchema = mongoose.Schema(
     buynow:[{ productId: String, name: String, price: String,size:String,quantity:String,pincode:String,address:String}],
     // cart:[cart.schema] this is not working
   },
-  { timestamps: true } // this adds created and update time timestamps is mongoose reserved keyword
+  { timestamps: true }, // this adds created and update time timestamps is mongoose reserved keyword
 );
+
+
 
 userSchema.methods = async function (enteredPassword) {
   return await compare(enteredPassword, this.password);

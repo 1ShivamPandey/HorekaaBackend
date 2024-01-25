@@ -4,6 +4,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const app = express();
 const path = require("path");
+const { MongoClient } = require("mongodb");
 // const fast2sms = require("fast-two-sms");
 
 const Userprofile = require("./routes/Userprofile");
@@ -63,6 +64,28 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 //   });
 
 //  console.log(otp);
+
+const uri =
+  "mongodb+srv://CramoxclubStore:CramoxclubStoreadmin@cluster0.7a4yjfb.mongodb.net/?retryWrites=true&w=majority"; // Update with your MongoDB connection string
+const databaseName = "test";
+const collectionName = "directorders"; // Update with your actual collection name
+
+app.get("/api/printUserProfiles", async (req, res) => {
+  try {
+    const client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const userProfiles = await collection.find().toArray();
+    res.json(userProfiles);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } 
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(5000, console.log(`port number is ${PORT}`));

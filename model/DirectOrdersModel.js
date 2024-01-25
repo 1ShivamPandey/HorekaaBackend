@@ -11,8 +11,10 @@ const DirectOrdersSchema = mongoose.Schema(
     },
   );
   
-  const directOrders =  mongoose.Schema({
-    number: String,
+  const directOrders=mongoose.Schema({
+    name:String,
+    number:String,
+    Shippingstatus:String,
     items: [DirectOrdersSchema],
   });
   

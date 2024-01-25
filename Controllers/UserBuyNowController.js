@@ -1,6 +1,5 @@
 const asynchandler = require("express-async-handler");
 const UserDetails = require("../model/UserProfileModel");
-
 const BuyNowData = asynchandler(async (req, res) => {
   try {
     const {number, pincode, address,items } = req.body;
@@ -40,6 +39,8 @@ const BuyNowData = asynchandler(async (req, res) => {
     });
 
     await user.save();
+
+
 
     console.log("User after adding to buy now.................", user); // Log user to check cart
 
