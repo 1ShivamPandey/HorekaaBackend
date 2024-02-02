@@ -13,6 +13,8 @@ const buyNowSchema = mongoose.Schema(
   
   const buySchema =  mongoose.Schema({
     number: String,
+    name:String,
+    Shippingstatus:String,
     items: [buyNowSchema],
   });
   

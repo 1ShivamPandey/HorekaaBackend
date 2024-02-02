@@ -87,5 +87,26 @@ app.get("/api/printUserProfiles", async (req, res) => {
   } 
 });
 
+const CartdatabaseName = "test";
+const CartcollectionName = "buynows"; // Update with your actual collection name
+
+app.get("/api/printUserCartData", async (req, res) => {
+  try {
+    const client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
+    const database = client.db(CartdatabaseName);
+    const collection = database.collection(CartcollectionName);
+    const userProfiles = await collection.find().toArray();
+    res.json(userProfiles);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } 
+});
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(5000, console.log(`port number is ${PORT}`));

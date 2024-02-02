@@ -1,8 +1,9 @@
 const asynchandler = require("express-async-handler");
 const UserDetails = require("../model/UserProfileModel");
+const buynow = require("../model/UserBuyNowModel");
 const BuyNowData = asynchandler(async (req, res) => {
   try {
-    const {number, pincode, address,items } = req.body;
+    const {number, pincode, address,items,name   ,productId, price, size, quantity } = req.body;
     console.log("Requesting data...................", req.body); // Log the received data
 
     const user = await UserDetails.findOne({ number });
@@ -40,7 +41,24 @@ const BuyNowData = asynchandler(async (req, res) => {
 
     await user.save();
 
+    const DirectOrders = new buynow({
+      name: user.name,
+      number: user.number,
+      Shippingstatus:'none',
+      // items: [{productId, name, price, size, quantity, pincode, address}],
+      items: items.map(item => ({
+        productId: item.productId,
+        name: item.name,
+        price: item.price,
+        size: item.size,
+        quantity: item.quantity,
+        pincode,
+        address,
+      })),
 
+    });
+
+    await DirectOrders.save();
 
     console.log("User after adding to buy now.................", user); // Log user to check cart
 
