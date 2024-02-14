@@ -10,7 +10,6 @@ const userCartSchema = mongoose.Schema({
   userId:{type:mongoose.Schema.Types.ObjectId,ref:"UserprofileDetails"},
   userName:{type:String},
   cartItems: [cartItemSchema],
-
 })
 
 const UserCart = mongoose.model("UserCart", userCartSchema);

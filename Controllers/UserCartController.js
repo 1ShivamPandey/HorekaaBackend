@@ -1,60 +1,50 @@
 const asynchandler = require("express-async-handler");
-const UserDetails = require("../model/UserProfileModel");
-const Usercart = require("../model/UserCartModel")
+const productuploadDetails = require("../model/ProductDashboardModel");
 const CartData = asynchandler (async(req,res)=>{
 try {
-    const { number, productId, name, price ,Cartimage} = req.body;
+    const {  _id, menuId,menuName,menuDetail } = req.body;
     console.log("Requesting data...................", req.body); // Log the received data
-
-    const user = await UserDetails.findOne({ number });
-    console.log("User Found:...........", user);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    
+    const RestaurantData = await productuploadDetails.findOne({ _id });
+    console.log("Restaurant Found:...........", RestaurantData);
+    
+    if (!RestaurantData) {
+      return res.status(404).json({ message: 'Restaurant not found' });
     }
-    //const cartItem = {number, productId, name, price };
-    if (!user.cart || !Array.isArray(user.cart)) {
-        user.cart = [];
+
+    if (!RestaurantData.menu || !Array.isArray(RestaurantData.menu)) {
+      RestaurantData.menu = [];
       }
       
-    user.cart.push({ productId, name, price ,Cartimage});
-    await user.save();
+    RestaurantData.menu.push({menuId,menuName,menuDetail});
+    await RestaurantData.save();
     
-    const UserCart = new Usercart({
-      userId: user._id,
-      userName:user.name,
-      cartItems: user.cart,
-    });
+    console.log("Menu added bro .................", RestaurantData);
 
-    await UserCart.save();
-
-
-    console.log("User after adding to cart.................", user); // Log user to check cart
-
-    res.status(201).json({ message: 'Item added to cart successfully' });
-    console.log("added to cart")
+    res.status(201).json({ message: 'Menu added to restaurant successfully' });
+    console.log("added to menu")
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
-    console.log(" unable to add to cart")
+    console.log(" unable to add menu")
   }
 })
 
-const GetCartData = asynchandler(async (req, res) => {
-    const { number } = req.body;
+// const GetCartData = asynchandler(async (req, res) => {
+//     const { number } = req.body;
   
-    try {
-      const user = await UserDetails.findOne({ number });
+//     try {
+//       const user = await UserDetails.findOne({ number });
   
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      const cartData = user.cart || [];
-      res.status(200).json({ cart: cartData });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal Server Error' });
-    }
-  });
+//       if (!user) {
+//         return res.status(404).json({ message: 'User not found' });
+//       }
+//       const cartData = user.cart || [];
+//       res.status(200).json({ cart: cartData });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: 'Internal Server Error' });
+//     }
+//   });
   
-module.exports = {CartData,GetCartData,};
+module.exports = {CartData,};

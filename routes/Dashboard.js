@@ -1,6 +1,5 @@
 const express = require("express");
-const {productUpload,GetProductData,} = require("../Controllers/DashboardControllers");
-// const {OrderData} = require('../Controllers/DashboardOrderscontroller')
+const {productUpload,GetProductData,Pauserestaurant,PauseRestaurantRemoved,DeleteMenu} = require("../Controllers/DashboardControllers");
 
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -23,15 +22,11 @@ const storage = multer.diskStorage({
 // });
 
 const upload = multer({ storage });
-
 const router = express.Router();
-
 router.route("/productupload").post(upload.single("productImage"), productUpload).get(GetProductData);
+router.route("/pauseRestaurant/:_id").post(Pauserestaurant)
+router.route("/pauseRestaurantRemoved/:_id").post(PauseRestaurantRemoved)
+router.route("/deleteMenu/list/delete/:restaurantId/:_id").delete(DeleteMenu)
 
-
-// router.route("/Orders").get(OrderData);
-// router.route('/sendotp').post(sendOTP);
-//router.route('/login').post(authUser);
-// router.route('/:number').get(getUserProfile);
 
 module.exports = router;

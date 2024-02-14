@@ -2,14 +2,12 @@ const mongoose = require("mongoose");
 
 const ProductSchema = mongoose.Schema(
   {
-    productName: { type: String, required: true },
-    productPrice: { type: String, required: true },
-    productQuantity: { type: String, required: true },
-    productDetails: { type: String, required: true },
-    productCategory: { type: String, required: true },
-    productSize: { type: String, required: true },
+    RestaurantName: { type: String, required: true },
+    RestaurantCategory: { type: String, required: true },
+    RestaurantDetail:{type:String,required:true},
     productImage: { type: String, required: true },
-
+    pause:{type:Boolean},
+    menu:[{ menuId: String, menuName: String, menuDetail: String, addDish:[{dishName:String,dishDetail:String,dishPrice:String,dishSize:String,dishType:String,dishCategory:String,dishImage:String}] }],
   },
   { timestamps: true } // this adds created and update time timestamps is mongoose reserved keyword
 );
@@ -24,5 +22,5 @@ ProductSchema.pre("save", async function (next) {
 
 //====================================================  Upload  ===========================================================
 
-const productuploadDetails = mongoose.model("ProductuploadDashboard", ProductSchema);
+const productuploadDetails = mongoose.model("Restaurant", ProductSchema);
 module.exports = productuploadDetails;
